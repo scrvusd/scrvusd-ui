@@ -6,7 +6,7 @@ import { FaExternalLinkAlt } from "react-icons/fa";
 export const ManageStaking = () => {
     const [isStake, setStake] = useState<boolean>(true);
 
-    return <div className="flex flex-col space-y-4 items-center sm:items-start box-deposit rounded-lg p-5 min-w-96 text-black min-h-full">
+    return <div className="flex flex-col space-y-4 items-center sm:items-start box-deposit rounded-lg sm:p-5 min-w-45 sm:min-w-96 text-black min-h-full">
         <div className="flex flex-row justify-center items-center space-x-4">
             <p
                 className={`cursor-pointer ${isStake ? "font-bold underline" : ""}`}

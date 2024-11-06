@@ -33,7 +33,7 @@ export const StakeCrvUsd = ({ value, handleValue }: IStakeCrvUsd) => {
                 </div>
                 <div className="flex flex-row justify-center items-center space-x-1">
                     <input
-                        className="rounded p-1 outline-none h-full"
+                        className="rounded p-1 outline-none h-full w-[100px] sm:w-full"
                         type="text"
                         value={value === '0' ? '' : value}
                         pattern="^[0-9]*[.]?[0-9]*$"

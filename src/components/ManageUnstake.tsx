@@ -6,7 +6,7 @@ import { WithdrawSCrvUsd } from "./WithdrawSCrvUsd";
 export const ManageUnstake = () => {
     const [deposit, setDeposit] = useState<string>('0');
 
-    return <div className="flex flex-col space-y-3 items-center sm:items-start box-deposit rounded-lg min-w-96 text-black">
+    return <div className="flex flex-col space-y-3 items-center sm:items-start box-deposit rounded-lg min-w-80 sm:min-w-96 text-black">
         <UnstakeSCrvUsd value={deposit} handleValue={setDeposit} />
 
         <div

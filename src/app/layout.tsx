@@ -34,7 +34,7 @@ export default function RootLayout({
         <Providers>
           <div className="flex flex-col justify-between items-center h-full">
             <Menu />
-            <div>
+            <div className="w-full">
               {children}
             </div>
             <Footer />
