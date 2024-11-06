@@ -34,7 +34,7 @@ export const Stats = () => {
         return totalProfitsReportedYearlyUSD * 100 / crvUsdStakedUSD;
     }, [totalProfitsReported, crvUsdStakedQuery.data, crvUsdPriceQuery.data]);
 
-    return <div className="flex flex-col space-y-2 items-center sm:items-start box-deposit rounded-lg p-2 text-black w-[180px] divide-y divide-dashed divide-slate-300 min-h-full">
+    return <div className="hidden md:flex flex-col space-y-2 items-center sm:items-start box-deposit rounded-lg p-2 text-black w-[180px] divide-y divide-dashed divide-slate-300 min-h-full">
         <div className=" flex flex-col justify-center items-center rounded pt-2 w-full space-y-1">
             <p className="text-sm">APR</p>
             <p className="font-bold text-black">{fixed(apr.toString(), 2)}%</p>
