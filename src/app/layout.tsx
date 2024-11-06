@@ -18,7 +18,7 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "scrvUSD",
-  description: "Stake your crvUSD to earn real yield",
+  description: "Stake your crvUSD to earn real yield.",
 };
 
 export default function RootLayout({
