@@ -12,6 +12,10 @@ const LINKS = [
         label: "Developer Docs",
         link: "https://resources.curve.fi"
     },
+    {
+        label: "scrvUSD Github",
+        link: "https://github.com/scrvusd/scrvusd-ui"
+    },
 ]
 
 export const Footer = () => {
