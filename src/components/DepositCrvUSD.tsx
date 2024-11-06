@@ -63,7 +63,7 @@ export const DepositCrvUSD = ({ deposit }: IDepositCrvUSD) => {
     const isDisable = useMemo(() => {
         const depositNumber = parseFloat(deposit);
         return allowance < depositNumber || depositNumber > crvUsdBalance || depositNumber > maxDeposit || deposit === '0';
-    }, [allowance, deposit]);
+    }, [allowance, deposit, maxDeposit, crvUsdBalance]);
 
     return <button
         className={`text-sm rounded w-full p-2 flex justify-center items-center mt-5 ${isDisable ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'bg-black text-white'} `}

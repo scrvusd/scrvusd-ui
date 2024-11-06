@@ -21,7 +21,7 @@ export const ApproveCrvUSD = ({ deposit }: IApproveCrvUSD) => {
 
     useEffect(() => {
         if (isApproveSuccess) {
-            queryClient.invalidateQueries({ queryKey: [CRV_USD_ALLOWANCE_QUERY] })
+            queryClient.invalidateQueries({ queryKey: [] })
         }
     }, [isApproveSuccess]);
 
