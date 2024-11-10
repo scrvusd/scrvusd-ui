@@ -1,19 +1,16 @@
 
 import { crvUSDControllerAbi } from "@/abis/crvUSDController";
 import { crvUSDFactoryAbi } from "@/abis/crvUSDFactory";
-import { monetaryPolicyAbi } from "@/abis/monetaryPolicy";
-import { pegkeeperAbi } from "@/abis/pegkeeper";
 import { CRVUSD_FACTORY } from "@/lib/contracts";
-import { equals } from "@/lib/strings";
 import { config } from "@/lib/web3";
 import { useQuery } from "@tanstack/react-query"
-import { formatUnits, zeroAddress } from "viem";
+import { formatUnits } from "viem";
 import { mainnet } from "viem/chains";
 import { multicall } from "wagmi/actions";
 
 const PEGKEEPERS = "pegkeepers";
 
-export const usePegKeepersProfits = () => {
+export const useCrvUSDControllerProfits = () => {
     return useQuery({
         queryKey: [PEGKEEPERS],
         queryFn: async () => {

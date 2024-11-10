@@ -4,6 +4,7 @@ import "./globals.css";
 import { Menu } from "@/components/Menu";
 import { Providers } from "./providers";
 import { Footer } from "@/components/Footer";
+import { Analytics } from "@vercel/analytics/react"
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -38,6 +39,7 @@ export default function RootLayout({
               {children}
             </div>
             <Footer />
+            <Analytics />
           </div>
         </Providers>
       </body>

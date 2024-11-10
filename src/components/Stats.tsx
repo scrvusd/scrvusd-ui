@@ -1,11 +1,13 @@
+import { WEEK } from "@/config/time";
 import { useCrvUsdCirculatingSupply } from "@/hooks/useCrvUsdCirculatingSupply";
 import { useCrvUsdPrice } from "@/hooks/useCrvUsdPrice";
 import { useCrvUsdStaked } from "@/hooks/useCrvUsdStaked";
-import { usePegKeepersProfits } from "@/hooks/usePegKeepersProfits";
+import { useCrvUSDControllerProfits } from "@/hooks/usePegKeepersProfits";
 import { useRangeFee } from "@/hooks/useRangeFee";
 import { useSCrvUsdPricePerShare } from "@/hooks/useSCrvUsdPricePerShare"
 import { useStrategyReported } from "@/hooks/useStrategyReported";
 import { fixed, formatUsd } from "@/lib/number";
+import moment from "moment";
 import { useMemo } from "react";
 import { FaExternalLinkAlt } from "react-icons/fa";
 
@@ -14,30 +16,61 @@ export const Stats = () => {
     const pricePerShareQuery = useSCrvUsdPricePerShare();
     const crvUsdStakedQuery = useCrvUsdStaked();
     const rangeFeesQuery = useRangeFee();
-    const pegkeeperProfitsQuery = usePegKeepersProfits();
+    const controllerProfitsQuery = useCrvUSDControllerProfits();
     const crvUSDCirculatingSupplyQuery = useCrvUsdCirculatingSupply();
-    const totalProfitsReported = useStrategyReported();
+    const strategyReportedData = useStrategyReported();
     const crvUsdPriceQuery = useCrvUsdPrice();
 
     const pricePerShare = useMemo(() => !pricePerShareQuery.data ? '-' : fixed((pricePerShareQuery.data || 1).toString(), 8), [pricePerShareQuery.data]);
     const crvUsdStaked = useMemo(() => !crvUsdStakedQuery.data ? '-' : formatUsd(crvUsdStakedQuery.data || 1), [crvUsdStakedQuery.data]);
-    const pegkeeperProfits = useMemo(() => !pegkeeperProfitsQuery.data ? '-' : formatUsd(pegkeeperProfitsQuery.data || 0), [pegkeeperProfitsQuery.data]);
     const percentageStaked = useMemo(() => (crvUsdStakedQuery.data || 0) * 100 / parseFloat(crvUSDCirculatingSupplyQuery.data || '1'), [crvUSDCirculatingSupplyQuery.data, crvUsdStakedQuery.data]);
 
-    const apr = useMemo(() => {
+    // Next distribution
+    const nextDistribution = useMemo(() => {
+        if (!rangeFeesQuery.data || !controllerProfitsQuery.data) {
+            return 0
+        }
+
+        return rangeFeesQuery.data.currentWeight * controllerProfitsQuery.data / 100;
+    }, [controllerProfitsQuery.data, rangeFeesQuery.data]);
+
+    const crvUsdStakedUSD = useMemo(() => {
         const crvUsdStaked = crvUsdStakedQuery.data || 1;
         const crvUsdPrice = crvUsdPriceQuery.data || 1;
-        const crvUsdStakedUSD = crvUsdStaked * crvUsdPrice;
+        return crvUsdStaked * crvUsdPrice;
+    }, [crvUsdStakedQuery.data, crvUsdPriceQuery.data]);
 
-        const totalProfitsReportedYearlyUSD = totalProfitsReported * crvUsdPrice * 52;
+    const apr = useMemo(() => {
+        if (strategyReportedData.timeSinceLastDistribution === 0 ||
+            strategyReportedData.timeSinceLastDistribution >= WEEK
+            || crvUsdStakedUSD === 0) {
+            return 0;
+        }
+
+        const crvUsdPrice = crvUsdPriceQuery.data || 1;
+        const totalProfitsReportedYearlyUSD = strategyReportedData.gain * crvUsdPrice * 52;
 
         return totalProfitsReportedYearlyUSD * 100 / crvUsdStakedUSD;
-    }, [totalProfitsReported, crvUsdStakedQuery.data, crvUsdPriceQuery.data]);
+    }, [strategyReportedData, crvUsdStakedUSD, crvUsdPriceQuery.data]);
+
+    const projectedApr = useMemo(() => {
+        if (crvUsdStakedUSD === 0 || strategyReportedData.timeSinceLastDistribution === 0) {
+            return 0
+        }
+        const dollarPerSec = nextDistribution / strategyReportedData.timeSinceLastDistribution;
+        const earnings = dollarPerSec * WEEK * 52;
+        return earnings * 100 / crvUsdStakedUSD;
+    }, [strategyReportedData, nextDistribution, crvUsdStakedUSD]);
+
+    const lastDistributionDate = useMemo(() => strategyReportedData.lastDistributionTimestamp === 0 ? '-' : moment.unix(strategyReportedData.lastDistributionTimestamp).utc().format("LL") ,[strategyReportedData]);
 
     return <div className="flex flex-col space-y-2 items-center sm:items-start box-deposit rounded-lg p-2 text-black w-[180px] divide-y divide-dashed divide-slate-300 min-h-full">
         <div className=" flex flex-col justify-center items-center rounded pt-2 w-full space-y-1">
             <p className="text-sm">APR</p>
-            <p className="font-bold text-black">{fixed(apr.toString(), 2)}%</p>
+            <div className="flex flex-col justify-center items-center">
+                <p className="font-bold text-black">{apr === 0 ? "-" : `${fixed(apr.toString(), 2)}%`}</p>
+                <p className="text-xs font-medium text-black">(proj {projectedApr === 0 ? '-' : `${fixed(projectedApr.toString(), 2)}%`})</p>
+            </div>
         </div>
         <div className=" flex flex-col justify-center items-center rounded pt-2 w-full space-y-1">
             <p className="text-sm">Price per share</p>
@@ -79,8 +112,20 @@ export const Stats = () => {
             </div>
         </div>
         <div className="flex flex-col justify-center items-center rounded pb-2 pt-2 w-full space-y-1">
-            <p className="text-sm">Current crvUSD fees</p>
-            <p className="font-bold text-black">${pegkeeperProfits}</p>
+            <p className="text-sm text-center">Last crvUSD fee distribution</p>
+            <div className="flex flex-row space-x-2 justify-center items-center">
+                <p className="font-bold text-black">${fixed(strategyReportedData.gain.toString(), 2)}</p>
+                {
+                    strategyReportedData.transactionHash && <a href={`https://etherscan.io/tx/${strategyReportedData.transactionHash}`} target="_blank">
+                        <FaExternalLinkAlt size={10} />
+                    </a>
+                }
+            </div>
+            <p className="text-xs font-medium text-black">({lastDistributionDate})</p>
+        </div>
+        <div className="flex flex-col justify-center items-center rounded pb-2 pt-2 w-full space-y-1">
+            <p className="text-sm text-center">Estimated next crvUSD fees distribution</p>
+            <p className="font-bold text-black">${formatUsd(nextDistribution)}</p>
         </div>
     </div>
 }

@@ -4,11 +4,23 @@ import { useBlockNumber, usePublicClient } from "wagmi"
 import { useEffect, useState } from "react"
 import { formatUnits, parseAbiItem } from "viem"
 
+interface IStrategyReported {
+    gain: number;
+    timeSinceLastDistribution: number;
+    transactionHash: `0x${string}` | undefined;
+    lastDistributionTimestamp : number;
+}
+
 export const useStrategyReported = () => {
     const publicClient = usePublicClient({ chainId: mainnet.id });
     const currentBlockNumber = useBlockNumber({ chainId: mainnet.id, watch: false });
 
-    const [totalProfits, setTotalProfits] = useState<number>(0);
+    const [totalProfits, setTotalProfits] = useState<IStrategyReported>({
+        gain: 0,
+        timeSinceLastDistribution: 0,
+        transactionHash: undefined,
+        lastDistributionTimestamp: 0
+    });
 
     useEffect(() => {
         fetchLogs();
@@ -25,18 +37,35 @@ export const useStrategyReported = () => {
             fromBlock: currentBlockNumber.data - BigInt(216000)
         });
 
-        if (!logs) {
+        if (!logs || logs.length === 0) {
             return;
         }
 
-        for (const log of logs) {
-            const gain = log.args[1];
-            if (!gain) {
-                continue;
-            }
-
-            setTotalProfits(parseFloat(formatUnits(gain, 18)));
+        const lastLog = logs[logs.length - 1];
+        const gain = lastLog.args[1];
+        if (!gain) {
+            return;
         }
+
+        const [block, currentBlock] = await Promise.all([
+            publicClient?.getBlock({
+                blockHash: lastLog.blockHash
+            }),
+            publicClient?.getBlock()
+        ])
+        if (!block || !currentBlock) {
+            return;
+        }
+
+        const blockTimestamp = Number(block.timestamp);
+        const currentBlockTimestamp = Number(currentBlock.timestamp);
+        const timeSinceLastDistribution = currentBlockTimestamp - blockTimestamp;
+        setTotalProfits({
+            gain: parseFloat(formatUnits(gain, 18)),
+            timeSinceLastDistribution,
+            transactionHash: lastLog.transactionHash,
+            lastDistributionTimestamp: blockTimestamp
+        });
     }
 
     return totalProfits;
