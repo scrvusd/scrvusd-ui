@@ -2,6 +2,7 @@
 import { crvUSDControllerAbi } from "@/abis/crvUSDController";
 import { crvUSDFactoryAbi } from "@/abis/crvUSDFactory";
 import { CRVUSD_FACTORY } from "@/lib/contracts";
+import { equals } from "@/lib/strings";
 import { config } from "@/lib/web3";
 import { useQuery } from "@tanstack/react-query"
 import { formatUnits } from "viem";
@@ -9,12 +10,14 @@ import { mainnet } from "viem/chains";
 import { multicall } from "wagmi/actions";
 
 const PEGKEEPERS = "pegkeepers";
+const CONTROLLERS_BLACKLISTED: `0x${string}`[] = ["0x8472A9A7632b173c8Cf3a86D3afec50c35548e76"];
 
 export const useCrvUSDControllerProfits = () => {
     return useQuery({
         queryKey: [PEGKEEPERS],
         queryFn: async () => {
-            const controllerAddresses = await getControllerAddresses();
+            const controllerAddresses = (await getControllerAddresses())
+                .filter((controllerAddress) => !CONTROLLERS_BLACKLISTED.some((controllerBlacklisted) => equals(controllerAddress, controllerBlacklisted)));
 
             let calls: any[] = controllerAddresses.map((controllerAddress) => {
                 return [

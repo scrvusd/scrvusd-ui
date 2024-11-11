@@ -124,8 +124,8 @@ export const Stats = () => {
             <p className="text-xs font-medium text-black">({lastDistributionDate})</p>
         </div>
         <div className="flex flex-col justify-center items-center rounded pb-2 pt-2 w-full space-y-1">
-            <p className="text-sm text-center">Estimated next crvUSD fees distribution</p>
-            <p className="font-bold text-black">${formatUsd(nextDistribution)}</p>
+            <p className="text-sm text-center">Future distribution estimate</p>
+            <p className="font-bold text-black">{formatUsd(nextDistribution)} crvUSD</p>
         </div>
     </div>
 }
