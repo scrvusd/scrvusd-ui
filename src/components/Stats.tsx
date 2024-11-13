@@ -50,7 +50,8 @@ export const Stats = () => {
         }
 
         const crvUsdPrice = crvUsdPriceQuery.data || 1;
-        const totalProfitsReportedYearlyUSD = strategyReportedData.gain * crvUsdPrice * 52;
+        const profitPerSec = strategyReportedData.gain / strategyReportedData.timeSincePreviousDistribution;
+        const totalProfitsReportedYearlyUSD = profitPerSec * WEEK * 52 * crvUsdPrice;
 
         return totalProfitsReportedYearlyUSD * 100 / crvUsdStakedUSD;
     }, [strategyReportedData, crvUsdStakedUSD, crvUsdPriceQuery.data]);
@@ -71,7 +72,7 @@ export const Stats = () => {
             <p className="text-sm">APR</p>
             <div className="flex flex-col justify-center items-center">
                 <p className="font-bold text-black">{apr === 0 ? "-" : `${fixed(apr.toString(), 2)}%`}</p>
-                <p className="text-xs font-medium text-black">(proj {projectedApr === 0 ? '-' : `${fixed(projectedApr.toString(), 2)}%`})</p>
+                {/*<p className="text-xs font-medium text-black">(proj {projectedApr === 0 ? '-' : `${fixed(projectedApr.toString(), 2)}%`})</p>*/}
             </div>
         </div>
         <div className=" flex flex-col justify-center items-center rounded pt-2 w-full space-y-1">

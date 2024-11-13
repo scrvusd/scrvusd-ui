@@ -9,6 +9,7 @@ interface IStrategyReported {
     timeSinceLastDistribution: number;
     transactionHash: `0x${string}` | undefined;
     lastDistributionTimestamp : number;
+    timeSincePreviousDistribution: number;
 }
 
 export const useStrategyReported = () => {
@@ -19,7 +20,8 @@ export const useStrategyReported = () => {
         gain: 0,
         timeSinceLastDistribution: 0,
         transactionHash: undefined,
-        lastDistributionTimestamp: 0
+        lastDistributionTimestamp: 0,
+        timeSincePreviousDistribution: 0,
     });
 
     useEffect(() => {
@@ -47,24 +49,29 @@ export const useStrategyReported = () => {
             return;
         }
 
-        const [block, currentBlock] = await Promise.all([
+        const [block, previousBlock, currentBlock] = await Promise.all([
             publicClient?.getBlock({
                 blockHash: lastLog.blockHash
             }),
+            publicClient?.getBlock({
+                blockHash: logs[logs.length - 2].blockHash
+            }),
             publicClient?.getBlock()
         ])
-        if (!block || !currentBlock) {
+        if (!block || !currentBlock || !previousBlock) {
             return;
         }
 
         const blockTimestamp = Number(block.timestamp);
+        const previousBlockTimestamp = Number(previousBlock.timestamp);
         const currentBlockTimestamp = Number(currentBlock.timestamp);
         const timeSinceLastDistribution = currentBlockTimestamp - blockTimestamp;
         setTotalProfits({
             gain: parseFloat(formatUnits(gain, 18)),
             timeSinceLastDistribution,
             transactionHash: lastLog.transactionHash,
-            lastDistributionTimestamp: blockTimestamp
+            lastDistributionTimestamp: blockTimestamp,
+            timeSincePreviousDistribution: currentBlockTimestamp - previousBlockTimestamp
         });
     }
 
