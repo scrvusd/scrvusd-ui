@@ -3,6 +3,7 @@ import { mainnet } from "viem/chains"
 import { useBlockNumber, usePublicClient } from "wagmi"
 import { useEffect, useState } from "react"
 import { formatUnits, parseAbiItem } from "viem"
+import { WEEK } from "@/config/time"
 
 interface IStrategyReported {
     gain: number;
@@ -36,7 +37,7 @@ export const useStrategyReported = () => {
         const logs = await publicClient?.getLogs({
             address: SCRV_USD,
             event: parseAbiItem("event StrategyReported(address indexed,uint256,uint256,uint256,uint256,uint256,uint256)"),
-            fromBlock: currentBlockNumber.data - BigInt(216000)
+            fromBlock: currentBlockNumber.data - BigInt(WEEK*2)
         });
 
         if (!logs || logs.length === 0) {
