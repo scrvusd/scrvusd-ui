@@ -1,4 +1,5 @@
 import { WEEK } from "@/config/time";
+import { useCrvUsdBalanceRewardsHandler } from "@/hooks/useCrvUsdBalanceRewardsHandler";
 import { useCrvUsdCirculatingSupply } from "@/hooks/useCrvUsdCirculatingSupply";
 import { useCrvUsdPrice } from "@/hooks/useCrvUsdPrice";
 import { useCrvUsdStaked } from "@/hooks/useCrvUsdStaked";
@@ -17,6 +18,7 @@ export const Stats = () => {
     const crvUsdStakedQuery = useCrvUsdStaked();
     const rangeFeesQuery = useRangeFee();
     const controllerProfitsQuery = useCrvUSDControllerProfits();
+    const crvUsdRewardHandlerQuery = useCrvUsdBalanceRewardsHandler();
     const crvUSDCirculatingSupplyQuery = useCrvUsdCirculatingSupply();
     const strategyReportedData = useStrategyReported();
     const crvUsdPriceQuery = useCrvUsdPrice();
@@ -27,12 +29,12 @@ export const Stats = () => {
 
     // Next distribution
     const nextDistribution = useMemo(() => {
-        if (!rangeFeesQuery.data || !controllerProfitsQuery.data) {
+        if (!rangeFeesQuery.data || !controllerProfitsQuery.data || crvUsdRewardHandlerQuery.data === undefined) {
             return 0
         }
 
-        return rangeFeesQuery.data.currentWeight * controllerProfitsQuery.data / 100;
-    }, [controllerProfitsQuery.data, rangeFeesQuery.data]);
+        return (rangeFeesQuery.data.currentWeight * controllerProfitsQuery.data / 100) + crvUsdRewardHandlerQuery.data;
+    }, [controllerProfitsQuery.data, rangeFeesQuery.data, crvUsdRewardHandlerQuery.data]);
 
     const crvUsdStakedUSD = useMemo(() => {
         const crvUsdStaked = crvUsdStakedQuery.data || 1;
