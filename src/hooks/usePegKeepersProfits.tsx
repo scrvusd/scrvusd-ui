@@ -16,9 +16,8 @@ export const useCrvUSDControllerProfits = () => {
     return useQuery({
         queryKey: [PEGKEEPERS],
         queryFn: async () => {
-            const controllerAddresses = (await getControllerAddresses())
-                .filter((controllerAddress) => !CONTROLLERS_BLACKLISTED.some((controllerBlacklisted) => equals(controllerAddress, controllerBlacklisted)));
-
+            const controllerAddresses = await getControllerAddresses();
+            
             let calls: any[] = controllerAddresses.map((controllerAddress) => {
                 return [
                     {
@@ -50,7 +49,12 @@ export const useCrvUSDControllerProfits = () => {
     });
 }
 
-const getControllerAddresses = async (): Promise<`0x${string}`[]> => {
+export const getControllerAddresses = async (): Promise<`0x${string}`[]> => {
+    return (await _getControllerAddresses())
+        .filter((controllerAddress) => !CONTROLLERS_BLACKLISTED.some((controllerBlacklisted) => equals(controllerAddress, controllerBlacklisted)));
+}
+
+const _getControllerAddresses = async (): Promise<`0x${string}`[]> => {
     const nbCollateralsResp = await multicall(config,
         {
             contracts: [

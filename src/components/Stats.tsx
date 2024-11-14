@@ -12,6 +12,8 @@ import { fixed, formatUsd } from "@/lib/number";
 import moment from "moment";
 import { useMemo } from "react";
 import { FaExternalLinkAlt } from "react-icons/fa";
+import { DistributeButton } from "./DistributeButton";
+import { useComputeTwa } from "@/hooks/useComputeTwa";
 
 export const Stats = () => {
 
@@ -25,6 +27,7 @@ export const Stats = () => {
     const crvUsdPriceQuery = useCrvUsdPrice();
     const profitUnlockingRateQuery = useProfitUnlockingRate();
     const sCrvUsdTotalSupplyQuery = useSCrvUsdTotalSupply();
+    const computeTwaQuery = useComputeTwa();
 
     const pricePerShare = useMemo(() => !pricePerShareQuery.data ? '-' : fixed((pricePerShareQuery.data || 1).toString(), 8), [pricePerShareQuery.data]);
     const crvUsdStaked = useMemo(() => !crvUsdStakedQuery.data ? '-' : formatUsd(crvUsdStakedQuery.data || 1), [crvUsdStakedQuery.data]);
@@ -87,6 +90,15 @@ export const Stats = () => {
         <div className="flex flex-col justify-center items-center rounded pb-2 pt-2 w-full space-y-1">
             <p className="text-sm">Current weight</p>
             <p className="font-bold text-black">{rangeFeesQuery.data?.currentWeight ? `${rangeFeesQuery.data?.currentWeight}%` : '-'}</p>
+            <a
+                href="https://docs.curve.fi/scrvusd/RewardsHandler/#weights-and-twa"
+                target="_blank"
+                className="flex flex-row justify-center items-center space-x-1 text-xs font-bold text-black"
+            >
+                <span>(Raw twa : {computeTwaQuery.data !== undefined ? `${computeTwaQuery.data}%` : '-'}</span>
+                <span><FaExternalLinkAlt size={8} /></span>
+                <span>)</span>
+            </a>
         </div>
         <div className="flex flex-col justify-center items-center rounded pb-2 pt-2 w-full space-y-1">
             <div className="flex flex-row space-x-2 justify-center items-center">
@@ -117,6 +129,7 @@ export const Stats = () => {
         <div className="flex flex-col justify-center items-center rounded pb-2 pt-2 w-full space-y-1">
             <p className="text-sm text-center">Future distribution estimate</p>
             <p className="font-bold text-black">{formatUsd(nextDistribution)} crvUSD</p>
+            <DistributeButton disable={nextDistribution === 0} />
         </div>
     </div>
 }

@@ -1,4 +1,4 @@
-import { CRV_USD_ALLOWANCE_QUERY, useCrvUsdAllowance } from "@/hooks/useCrvUsdAllowance"
+import { useCrvUsdAllowance } from "@/hooks/useCrvUsdAllowance"
 import { CRV_USD, SCRV_USD } from "@/lib/contracts";
 import { config } from "@/lib/web3";
 import { useQueryClient } from "@tanstack/react-query";
