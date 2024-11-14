@@ -1,11 +1,12 @@
-import { WEEK } from "@/config/time";
 import { useCrvUsdBalanceRewardsHandler } from "@/hooks/useCrvUsdBalanceRewardsHandler";
 import { useCrvUsdCirculatingSupply } from "@/hooks/useCrvUsdCirculatingSupply";
 import { useCrvUsdPrice } from "@/hooks/useCrvUsdPrice";
 import { useCrvUsdStaked } from "@/hooks/useCrvUsdStaked";
 import { useCrvUSDControllerProfits } from "@/hooks/usePegKeepersProfits";
+import { useProfitUnlockingRate } from "@/hooks/useProfitUnlockingRate";
 import { useRangeFee } from "@/hooks/useRangeFee";
 import { useSCrvUsdPricePerShare } from "@/hooks/useSCrvUsdPricePerShare"
+import { useSCrvUsdTotalSupply } from "@/hooks/useSCrvUsdTotalSupply";
 import { useStrategyReported } from "@/hooks/useStrategyReported";
 import { fixed, formatUsd } from "@/lib/number";
 import moment from "moment";
@@ -22,6 +23,8 @@ export const Stats = () => {
     const crvUSDCirculatingSupplyQuery = useCrvUsdCirculatingSupply();
     const strategyReportedData = useStrategyReported();
     const crvUsdPriceQuery = useCrvUsdPrice();
+    const profitUnlockingRateQuery = useProfitUnlockingRate();
+    const sCrvUsdTotalSupplyQuery = useSCrvUsdTotalSupply();
 
     const pricePerShare = useMemo(() => !pricePerShareQuery.data ? '-' : fixed((pricePerShareQuery.data || 1).toString(), 8), [pricePerShareQuery.data]);
     const crvUsdStaked = useMemo(() => !crvUsdStakedQuery.data ? '-' : formatUsd(crvUsdStakedQuery.data || 1), [crvUsdStakedQuery.data]);
@@ -43,27 +46,12 @@ export const Stats = () => {
     }, [crvUsdStakedQuery.data, crvUsdPriceQuery.data]);
 
     const apr = useMemo(() => {
-        if (strategyReportedData.timeSinceLastDistribution === 0 ||
-            strategyReportedData.timeSinceLastDistribution >= WEEK
-            || crvUsdStakedUSD === 0) {
+        if (profitUnlockingRateQuery.data === undefined || sCrvUsdTotalSupplyQuery.data === undefined || crvUsdStakedUSD === 0) {
             return 0;
         }
 
-        const crvUsdPrice = crvUsdPriceQuery.data || 1;
-        const profitPerSec = strategyReportedData.gain / strategyReportedData.timeSincePreviousDistribution;
-        const totalProfitsReportedYearlyUSD = profitPerSec * WEEK * 52 * crvUsdPrice;
-
-        return totalProfitsReportedYearlyUSD * 100 / crvUsdStakedUSD;
+        return ((profitUnlockingRateQuery.data / 1e12) * 31536000 * 100) / sCrvUsdTotalSupplyQuery.data;
     }, [strategyReportedData, crvUsdStakedUSD, crvUsdPriceQuery.data]);
-
-    const projectedApr = useMemo(() => {
-        if (crvUsdStakedUSD === 0 || strategyReportedData.timeSinceLastDistribution === 0) {
-            return 0
-        }
-        const dollarPerSec = nextDistribution / strategyReportedData.timeSinceLastDistribution;
-        const earnings = dollarPerSec * WEEK * 52;
-        return earnings * 100 / crvUsdStakedUSD;
-    }, [strategyReportedData, nextDistribution, crvUsdStakedUSD]);
 
     const lastDistributionDate = useMemo(() => strategyReportedData.lastDistributionTimestamp === 0 ? '-' : moment.unix(strategyReportedData.lastDistributionTimestamp).utc().format("LL") ,[strategyReportedData]);
 

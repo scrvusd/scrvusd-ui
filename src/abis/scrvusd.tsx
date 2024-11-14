@@ -10,4 +10,5 @@ export const scrvusdAbi = parseAbi([
     'function deposit(uint256 assets, address receiver) external',
     'function withdraw(uint256 assets, address receiver, address owner) external',
     'function redeem(uint256 assets, address receiver, address owner) external',
+    'function profitUnlockingRate() external view returns(uint256)',
 ])
