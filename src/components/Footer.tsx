@@ -1,8 +1,8 @@
 const LINKS = [
     {
         label: "Curve UI",
-        link: "https://curve.fi",
-        img: "https://curve.fi/_next/static/media/curve-logo.f83f84d4.png"
+        link: "https://crvusd.curve.fi/#/ethereum/scrvUSD",
+        img: "https://crvusd.curve.fi/_next/static/media/scrvUSD-sm.6ea621f0.webp"
     },
     {
         label: "Curve Resources",
