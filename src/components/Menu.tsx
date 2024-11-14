@@ -35,7 +35,7 @@ export const Menu = () => {
             </div>
 
             <div className="bg-yellow-400 p-2 rounded text-yellow-800 text-sm text-center">
-                <p>Disclaimer: Currently there is no UI available from Curve Finance for savings crvUSD. Please use scrvusd.xyz at your own risk.</p>
+                <p>Disclaimer: Please use scrvusd.xyz at your own risk.</p>
             </div>
 
         </div>
