@@ -6,7 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
 import { parseEther } from "viem";
 import { mainnet } from "viem/chains";
-import { useAccount, useWriteContract } from "wagmi";
+import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { switchChain } from "wagmi/actions";
 
 interface IWithdrawSCrvUsd {
@@ -18,13 +18,14 @@ export const WithdrawSCrvUsd = ({ value }: IWithdrawSCrvUsd) => {
     const { chainId, address, isConnected } = useAccount();
     const scrvUsdBalanceQuery = useSCrvUsdBalance();
 
-    const { isSuccess: isDepositSuccess, writeContract: depositWrite } = useWriteContract();
+    const { data: hash, writeContract: withdrawWrite } = useWriteContract();
+    const { isSuccess: isWithdrawSuccess  } = useWaitForTransactionReceipt({hash});
 
     useEffect(() => {
-        if (isDepositSuccess) {
+        if (isWithdrawSuccess) {
             queryClient.invalidateQueries({ queryKey: [] })
         }
-    }, [isDepositSuccess]);
+    }, [isWithdrawSuccess]);
 
     const unstake = async () => {
         if (!address) {
@@ -35,7 +36,7 @@ export const WithdrawSCrvUsd = ({ value }: IWithdrawSCrvUsd) => {
             await switchChain(config, { chainId: mainnet.id });
         }
 
-        depositWrite({
+        withdrawWrite({
             address: SCRV_USD,
             abi: scrvusdAbi,
             functionName: 'redeem',

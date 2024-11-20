@@ -3,7 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { switchChain } from "wagmi/actions";
 import { mainnet } from "viem/chains";
-import { useAccount, useWriteContract } from "wagmi";
+import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { FEE_SPLITTER, MULTICALL_MAINNET, REWARDS_HANDLER } from "@/lib/contracts";
 import { getControllerAddresses } from "@/hooks/usePegKeepersProfits";
 import { encodeFunctionData } from 'viem';
@@ -19,7 +19,9 @@ export const DistributeButton = ({ disable }: IDistributeButton) => {
 
     const queryClient = useQueryClient();
     const { chainId } = useAccount();
-    const { isSuccess: isDistributedSuccess, writeContract: distributeWriteContract } = useWriteContract();
+
+    const { data: hash, writeContract: distributeWriteContract } = useWriteContract();
+    const { isSuccess: isDistributedSuccess  } = useWaitForTransactionReceipt({hash});
 
     useEffect(() => {
         if (isDistributedSuccess) {

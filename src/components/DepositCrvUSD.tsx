@@ -8,7 +8,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
 import { parseEther } from "viem";
 import { mainnet } from "viem/chains";
-import { useAccount, useWriteContract } from "wagmi";
+import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { switchChain } from "wagmi/actions";
 
 interface IDepositCrvUSD {
@@ -22,7 +22,8 @@ export const DepositCrvUSD = ({ deposit }: IDepositCrvUSD) => {
     const allowanceCrvUsdQuery = useCrvUsdAllowanceDepositor();
     const maxDepositQuery = useMaxDeposit();
 
-    const { isSuccess: isDepositSuccess, writeContract: depositWrite } = useWriteContract();
+    const { data: hash, writeContract: depositWrite } = useWriteContract();
+    const { isSuccess: isDepositSuccess  } = useWaitForTransactionReceipt({hash});
 
     useEffect(() => {
         if (isDepositSuccess) {
