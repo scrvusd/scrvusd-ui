@@ -1,9 +1,6 @@
 import { useCrvUsdBalance } from "@/hooks/useCrvUsdBalance";
 import { useCrvUsdPrice } from "@/hooks/useCrvUsdPrice";
-import { usePreviewDeposit } from "@/hooks/usePreviewDeposit";
 import { usePreviewWithdraw } from "@/hooks/usePreviewWithdraw";
-import { useSCrvUsdBalance } from "@/hooks/useSCrvUsdBalance";
-import { useSCrvUsdPricePerShare } from "@/hooks/useSCrvUsdPricePerShare";
 import { CRV_USD_IMAGE } from "@/lib/images";
 import { formatUsd } from "@/lib/number";
 

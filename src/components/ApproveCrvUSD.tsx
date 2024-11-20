@@ -1,5 +1,5 @@
-import { useCrvUsdAllowance } from "@/hooks/useCrvUsdAllowance"
-import { CRV_USD, SCRV_USD } from "@/lib/contracts";
+import { useCrvUsdAllowanceDepositor } from "@/hooks/useCrvUsdAllowanceDepositor"
+import { CRV_USD, DEPOSITOR, SCRV_USD } from "@/lib/contracts";
 import { config } from "@/lib/web3";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
@@ -16,7 +16,7 @@ export const ApproveCrvUSD = ({ deposit }: IApproveCrvUSD) => {
     const { isConnected } = useAccount();
     const queryClient = useQueryClient();
     const { chainId } = useAccount();
-    const allowanceCrvUsd = useCrvUsdAllowance();
+    const allowanceCrvUsd = useCrvUsdAllowanceDepositor();
     const { isSuccess: isApproveSuccess, writeContract: approveWriteContract } = useWriteContract();
 
     useEffect(() => {
@@ -34,7 +34,7 @@ export const ApproveCrvUSD = ({ deposit }: IApproveCrvUSD) => {
             address: CRV_USD,
             abi: erc20Abi,
             functionName: 'approve',
-            args: [SCRV_USD, maxUint256],
+            args: [DEPOSITOR, maxUint256],
             chainId: mainnet.id,
         });
     }

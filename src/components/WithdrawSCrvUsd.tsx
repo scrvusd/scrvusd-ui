@@ -1,7 +1,4 @@
 import { scrvusdAbi } from "@/abis/scrvusd";
-import { useCrvUsdAllowance } from "@/hooks/useCrvUsdAllowance"
-import { useCrvUsdBalance } from "@/hooks/useCrvUsdBalance";
-import { useMaxDeposit } from "@/hooks/useMaxDeposit";
 import { useSCrvUsdBalance } from "@/hooks/useSCrvUsdBalance";
 import { SCRV_USD } from "@/lib/contracts";
 import { config } from "@/lib/web3";
