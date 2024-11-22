@@ -6,24 +6,30 @@ import { formatUnits, parseEther } from "viem";
 import { readContract } from "wagmi/actions";
 import { scrvusdAbi } from "@/abis/scrvusd";
 import { mainnet } from "viem/chains";
+import { useDepositorFee } from "./useDepositorFee";
 
 export const SCRV_USD_PREVIEW_DEPOSIT_QUERY = "scrvusd-preview-deposit";
 
 export const usePreviewDeposit = (deposit: string) => {
+    const depositorFeeQuery = useDepositorFee();
 
     return useQuery({
-        queryKey: [SCRV_USD_PREVIEW_DEPOSIT_QUERY, deposit],
+        queryKey: [SCRV_USD_PREVIEW_DEPOSIT_QUERY, deposit, depositorFeeQuery.data],
         queryFn: async () => {
 
-            const result = await readContract(config, {
+            const resultPreview = await readContract(config, {
                 abi: scrvusdAbi,
                 address: SCRV_USD,
                 functionName: 'previewDeposit',
                 args: [parseEther(deposit)],
                 chainId: mainnet.id
-            })
+            });
 
-            return formatUnits(result, 18);
+            const preview = parseFloat(formatUnits(resultPreview, 18));
+            const fee = depositorFeeQuery.data || 0;
+
+            return (preview - (preview * fee)).toString();
         },
+        enabled: depositorFeeQuery.data !== undefined
     });
 }

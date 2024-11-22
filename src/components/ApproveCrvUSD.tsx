@@ -1,11 +1,11 @@
-import { useCrvUsdAllowance } from "@/hooks/useCrvUsdAllowance"
-import { CRV_USD, SCRV_USD } from "@/lib/contracts";
+import { useCrvUsdAllowanceDepositor } from "@/hooks/useCrvUsdAllowanceDepositor"
+import { CRV_USD, DEPOSITOR, SCRV_USD } from "@/lib/contracts";
 import { config } from "@/lib/web3";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
 import { erc20Abi, maxUint256 } from "viem";
 import { mainnet } from "viem/chains";
-import { useAccount, useWriteContract } from "wagmi";
+import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { switchChain } from "wagmi/actions";
 
 interface IApproveCrvUSD {
@@ -16,8 +16,9 @@ export const ApproveCrvUSD = ({ deposit }: IApproveCrvUSD) => {
     const { isConnected } = useAccount();
     const queryClient = useQueryClient();
     const { chainId } = useAccount();
-    const allowanceCrvUsd = useCrvUsdAllowance();
-    const { isSuccess: isApproveSuccess, writeContract: approveWriteContract } = useWriteContract();
+    const allowanceCrvUsd = useCrvUsdAllowanceDepositor();
+    const { data: hash, writeContract: approveWriteContract } = useWriteContract();
+    const { isSuccess: isApproveSuccess  } = useWaitForTransactionReceipt({hash})
 
     useEffect(() => {
         if (isApproveSuccess) {
@@ -34,7 +35,7 @@ export const ApproveCrvUSD = ({ deposit }: IApproveCrvUSD) => {
             address: CRV_USD,
             abi: erc20Abi,
             functionName: 'approve',
-            args: [SCRV_USD, maxUint256],
+            args: [DEPOSITOR, maxUint256],
             chainId: mainnet.id,
         });
     }

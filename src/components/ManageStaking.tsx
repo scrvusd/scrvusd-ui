@@ -27,13 +27,32 @@ export const ManageStaking = () => {
         {
             !isStake && <ManageUnstake />
         }
+        <div className="flex flex-col justify-start items-start space-y-1">
+        <div
+                className="text-sm  w-full max-w-[380px] flex flex-col justify-start items-start space-y-1"
+            >
+                <p className="inline-block text-center">
+                    Please note that by depositing on scrvusd.xyz, you are interacting with multiple contracts.
+                </p>
 
-        <a
-            href="https://etherscan.io/address/0x0655977feb2f289a4ab78af67bab0d17aab84367"
-            target="_blank"
-            className="text-sm text-center w-full max-w-[380px] flex flex-row justify-center items-center"
-        >
-            <p className="inline-block">Please note scrvusd.xyz only interacts with one contract. Please verify that your approval and deposit are on the scrvusd vault contract. You can verify the scrvusd vault contract here <span className="inline-block"> <FaExternalLinkAlt size={10} /></span>.</p>
-        </a>
+                <div className="">
+                    <span>Contracts can be verified: </span>
+                    <a
+                        href="https://etherscan.io/address/0x0655977feb2f289a4ab78af67bab0d17aab84367"
+                        target="_blank"
+                        className="text-sm mr-1"
+                    >
+                        <span>scrvusd vault <span className="inline-block"> <FaExternalLinkAlt size={10} /></span></span>
+                    </a>
+                    <a
+                        href="https://etherscan.io/address/0x0655977feb2f289a4ab78af67bab0d17aab84367"
+                        target="_blank"
+                        className="text-sm"
+                    >
+                        <span>depositor <span className="inline-block"> <FaExternalLinkAlt size={10} /></span></span>
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 }

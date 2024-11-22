@@ -1,14 +1,14 @@
 import { scrvusdAbi } from "@/abis/scrvusd";
-import { CRV_USD_ALLOWANCE_QUERY, useCrvUsdAllowance } from "@/hooks/useCrvUsdAllowance"
+import { useCrvUsdAllowanceDepositor } from "@/hooks/useCrvUsdAllowanceDepositor";
 import { useCrvUsdBalance } from "@/hooks/useCrvUsdBalance";
 import { useMaxDeposit } from "@/hooks/useMaxDeposit";
-import { CRV_USD, SCRV_USD } from "@/lib/contracts";
+import { DEPOSITOR, SCRV_USD } from "@/lib/contracts";
 import { config } from "@/lib/web3";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
-import { erc20Abi, maxUint256, parseEther } from "viem";
+import { parseEther } from "viem";
 import { mainnet } from "viem/chains";
-import { useAccount, useWriteContract } from "wagmi";
+import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { switchChain } from "wagmi/actions";
 
 interface IDepositCrvUSD {
@@ -19,10 +19,11 @@ export const DepositCrvUSD = ({ deposit }: IDepositCrvUSD) => {
     const queryClient = useQueryClient();
     const { chainId, address } = useAccount();
     const crvUsdBalanceQuery = useCrvUsdBalance();
-    const allowanceCrvUsdQuery = useCrvUsdAllowance();
+    const allowanceCrvUsdQuery = useCrvUsdAllowanceDepositor();
     const maxDepositQuery = useMaxDeposit();
 
-    const { isSuccess: isDepositSuccess, writeContract: depositWrite } = useWriteContract();
+    const { data: hash, writeContract: depositWrite } = useWriteContract();
+    const { isSuccess: isDepositSuccess  } = useWaitForTransactionReceipt({hash});
 
     useEffect(() => {
         if (isDepositSuccess) {
@@ -40,7 +41,7 @@ export const DepositCrvUSD = ({ deposit }: IDepositCrvUSD) => {
         }
 
         depositWrite({
-            address: SCRV_USD,
+            address: DEPOSITOR,
             abi: scrvusdAbi,
             functionName: 'deposit',
             args: [parseEther(deposit), address],

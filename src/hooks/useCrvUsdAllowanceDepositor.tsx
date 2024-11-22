@@ -1,5 +1,5 @@
 "use client"
-import { CRV_USD, SCRV_USD } from "@/lib/contracts";
+import { CRV_USD, DEPOSITOR } from "@/lib/contracts";
 import { config } from "@/lib/web3";
 import { useQuery } from "@tanstack/react-query"
 import { erc20Abi, formatUnits } from "viem";
@@ -9,7 +9,7 @@ import { mainnet } from "viem/chains";
 
 export const CRV_USD_ALLOWANCE_QUERY = "crvusd-allowance";
 
-export const useCrvUsdAllowance = () => {
+export const useCrvUsdAllowanceDepositor = () => {
     const { address, isConnected } = useAccount();
 
     return useQuery({
@@ -23,7 +23,7 @@ export const useCrvUsdAllowance = () => {
                 abi: erc20Abi,
                 address: CRV_USD,
                 functionName: 'allowance',
-                args: [address, SCRV_USD],
+                args: [address, DEPOSITOR],
                 chainId: mainnet.id
             })
 

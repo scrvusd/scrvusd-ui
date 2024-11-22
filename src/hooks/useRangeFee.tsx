@@ -22,7 +22,7 @@ export const useRangeFee = () => {
                         abi: feeSplitterAbi,
                         address: FEE_SPLITTER,
                         functionName: 'receivers',
-                        args: [BigInt(1)],
+                        args: [BigInt(0)],
                         chainId: mainnet.id,
                     },
                     {
@@ -49,7 +49,8 @@ export const useRangeFee = () => {
 
             let resp = results.shift();
             if(resp?.status === "success") {
-                maxWeight = parseFloat(formatUnits(resp.result as bigint, 2));
+                const receiverResp = resp.result as any;
+                maxWeight = parseFloat(formatUnits(receiverResp[1] as bigint, 2));
             }
 
             resp = results.shift();

@@ -1,9 +1,12 @@
 import { useCrvUsdPrice } from "@/hooks/useCrvUsdPrice";
+import { useDepositorFee } from "@/hooks/useDepositorFee";
 import { usePreviewDeposit } from "@/hooks/usePreviewDeposit";
 import { useSCrvUsdBalance } from "@/hooks/useSCrvUsdBalance";
 import { useSCrvUsdPricePerShare } from "@/hooks/useSCrvUsdPricePerShare";
 import { SCRV_USD_IMAGE } from "@/lib/images";
-import { formatUsd } from "@/lib/number";
+import { fixed, formatUsd } from "@/lib/number";
+import { Tooltip } from "@mui/material";
+import { CiCircleInfo } from "react-icons/ci";
 
 interface IReceiveSCrvUsd {
     deposit: string;
@@ -14,6 +17,7 @@ export const ReceiveSCrvUsd = ({ deposit }: IReceiveSCrvUsd) => {
     const crvUsdPriceQuery = useCrvUsdPrice();
     const scrvUsdPricePerShareQuery = useSCrvUsdPricePerShare();
     const previewDepositQuery = usePreviewDeposit(deposit)
+    const depositorFeeQuery = useDepositorFee();
 
     // Prices
     const crvUsdPrice = crvUsdPriceQuery.data ? crvUsdPriceQuery.data : 1;
@@ -35,7 +39,20 @@ export const ReceiveSCrvUsd = ({ deposit }: IReceiveSCrvUsd) => {
                     />
                     <p>scrvUSD</p>
                 </div>
-                <p>{formatUsd(previewDepositQuery.data || '0')}</p>
+                <div className="flex flex-row jsutify-center items-center space-x-2">
+                    <p>{formatUsd(previewDepositQuery.data || '0')}</p>
+                    {
+                        depositorFeeQuery.data !== undefined && <Tooltip
+                            title={<div className="flex flex-col space-y-1">
+                                Minus {fixed((depositorFeeQuery.data*100).toString(), 2)}% fee
+                            </div>}
+                            aria-label="add">
+                            <p><CiCircleInfo className="cursor-pointer" size={15} /></p>
+                        </Tooltip>
+                    }
+
+                </div>
+
             </div>
             <div className="flex flex-row justify-between items-center w-full text-sm">
                 <p>Balance: {scrvUsdBalanceFormatted} scrvUSD</p>
