@@ -56,6 +56,21 @@ export const Stats = () => {
         return ((profitUnlockingRateQuery.data / 1e12) * 31536000 * 100) / sCrvUsdTotalSupplyQuery.data;
     }, [strategyReportedData, crvUsdStakedUSD, crvUsdPriceQuery.data]);
 
+    const currentWeight = useMemo(() => {
+        if (!rangeFeesQuery.data) {
+            return 0;
+        }
+
+        if (rangeFeesQuery.data.currentWeight > rangeFeesQuery.data.maxWeight) {
+            return rangeFeesQuery.data.maxWeight
+        }
+
+        if (rangeFeesQuery.data.currentWeight < rangeFeesQuery.data.minWeight) {
+            return rangeFeesQuery.data.minWeight;
+        }
+        return rangeFeesQuery.data.currentWeight;
+    }, [rangeFeesQuery.data]);
+
     const lastDistributionDate = useMemo(() => strategyReportedData.lastDistributionTimestamp === 0 ? '-' : moment.unix(strategyReportedData.lastDistributionTimestamp).utc().format("LL") ,[strategyReportedData]);
 
     return <div className="flex flex-col space-y-2 items-center sm:items-start box-deposit rounded-lg p-2 text-black w-[180px] divide-y divide-dashed divide-slate-300 min-h-full">
@@ -89,7 +104,7 @@ export const Stats = () => {
         </div>
         <div className="flex flex-col justify-center items-center rounded pb-2 pt-2 w-full space-y-1">
             <p className="text-sm">Current weight</p>
-            <p className="font-bold text-black">{rangeFeesQuery.data?.currentWeight ? `${rangeFeesQuery.data?.currentWeight}%` : '-'}</p>
+            <p className="font-bold text-black">{`${currentWeight}%`}</p>
             <a
                 href="https://docs.curve.fi/scrvusd/RewardsHandler/#weights-and-twa"
                 target="_blank"
