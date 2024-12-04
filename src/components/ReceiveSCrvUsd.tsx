@@ -41,7 +41,7 @@ export const ReceiveSCrvUsd = ({ deposit }: IReceiveSCrvUsd) => {
                 </div>
                 <div className="flex flex-row jsutify-center items-center space-x-2">
                     <p>{formatUsd(previewDepositQuery.data || '0')}</p>
-                    {
+                    {/*
                         depositorFeeQuery.data !== undefined && <Tooltip
                             title={<div className="flex flex-col space-y-1">
                                 Minus {fixed((depositorFeeQuery.data*100).toString(), 2)}% fee
@@ -49,7 +49,7 @@ export const ReceiveSCrvUsd = ({ deposit }: IReceiveSCrvUsd) => {
                             aria-label="add">
                             <p><CiCircleInfo className="cursor-pointer" size={15} /></p>
                         </Tooltip>
-                    }
+                    */}
 
                 </div>
 

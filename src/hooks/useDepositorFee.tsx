@@ -22,7 +22,7 @@ export const useDepositorFee = () => {
                 chainId: mainnet.id
             });
             
-            return parseFloat(formatUnits(resultFee, 18));
+            return 0
         }
     });
 }
