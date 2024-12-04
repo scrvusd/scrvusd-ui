@@ -32,24 +32,17 @@ export const ManageStaking = () => {
                 className="text-sm  w-full max-w-[380px] flex flex-col justify-start items-start space-y-1"
             >
                 <p className="inline-block text-center">
-                    Please note that by depositing on scrvusd.xyz, you are interacting with multiple contracts.
+                    Please note that by depositing on scrvusd.xyz, you are interacting with one contract.
                 </p>
 
                 <div className="">
-                    <span>Contracts can be verified: </span>
+                    <span>scrvUSD contract can be verified: </span>
                     <a
                         href="https://etherscan.io/address/0x0655977feb2f289a4ab78af67bab0d17aab84367"
                         target="_blank"
                         className="text-sm mr-1"
                     >
                         <span>scrvusd vault <span className="inline-block"> <FaExternalLinkAlt size={10} /></span></span>
-                    </a>
-                    <a
-                        href="https://etherscan.io/address/0x0655977feb2f289a4ab78af67bab0d17aab84367"
-                        target="_blank"
-                        className="text-sm"
-                    >
-                        <span>depositor <span className="inline-block"> <FaExternalLinkAlt size={10} /></span></span>
                     </a>
                 </div>
             </div>
