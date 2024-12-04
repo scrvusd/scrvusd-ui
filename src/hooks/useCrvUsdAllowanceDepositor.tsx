@@ -1,5 +1,5 @@
 "use client"
-import { CRV_USD, DEPOSITOR } from "@/lib/contracts";
+import { CRV_USD, SCRV_USD } from "@/lib/contracts";
 import { config } from "@/lib/web3";
 import { useQuery } from "@tanstack/react-query"
 import { erc20Abi, formatUnits } from "viem";
@@ -23,7 +23,7 @@ export const useCrvUsdAllowanceDepositor = () => {
                 abi: erc20Abi,
                 address: CRV_USD,
                 functionName: 'allowance',
-                args: [address, DEPOSITOR],
+                args: [address, SCRV_USD],
                 chainId: mainnet.id
             })
 

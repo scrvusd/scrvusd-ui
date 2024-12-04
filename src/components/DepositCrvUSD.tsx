@@ -2,7 +2,7 @@ import { scrvusdAbi } from "@/abis/scrvusd";
 import { useCrvUsdAllowanceDepositor } from "@/hooks/useCrvUsdAllowanceDepositor";
 import { useCrvUsdBalance } from "@/hooks/useCrvUsdBalance";
 import { useMaxDeposit } from "@/hooks/useMaxDeposit";
-import { DEPOSITOR, SCRV_USD } from "@/lib/contracts";
+import { SCRV_USD } from "@/lib/contracts";
 import { config } from "@/lib/web3";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
@@ -41,7 +41,7 @@ export const DepositCrvUSD = ({ deposit }: IDepositCrvUSD) => {
         }
 
         depositWrite({
-            address: DEPOSITOR,
+            address: SCRV_USD,
             abi: scrvusdAbi,
             functionName: 'deposit',
             args: [parseEther(deposit), address],
